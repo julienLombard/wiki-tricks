@@ -2,12 +2,19 @@
 
 namespace App\Entity;
 
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TrickRepository")
+ * @UniqueEntity(
+ *  fields={"name"},
+ *  message="Le nom de figure n'est pas disponible"
+ * )
  */
 class Trick
 {
@@ -20,11 +27,20 @@ class Trick
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Assert\Length(min=4, max=100, minMessage="4 caractères minimum",
+     * maxMessage="100 caractères maximum")
      */
     private $name;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     * @Gedmo\Slug(fields={"name"});
+     */
+    private $slug;
+
+    /**
      * @ORM\Column(type="text")
+     * @Assert\Length(min=10, minMessage="10 caractères minimum")
      */
     private $content;
 
@@ -41,6 +57,7 @@ class Trick
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="articles")
      * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid()
      */
     private $category;
 
@@ -51,11 +68,13 @@ class Trick
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Video", mappedBy="trick", orphanRemoval=true)
+     * @Assert\Valid()
      */
     private $videos;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Picture", mappedBy="trick")
+     * @Assert\Valid()
      */
     private $pictures;
 
@@ -79,6 +98,18 @@ class Trick
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
 
         return $this;
     }
@@ -223,4 +254,22 @@ class Trick
 
         return $this;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    // function jsonNormalize()
+    // {
+    //     return [
+    //         "id"        => $this->getId(),
+    //         "name"    => $this->getName(),
+    //         "content"    => $this->getContent(),
+    //         "publishedAt"    => $this->getPublishedAt(),
+    //         "modifiedAt"    => $this->getModifiedAt(),
+    //         "category"    => $this->getCategory(),
+    //         "comments"    => $this->getComments(),
+    //         "videos"    => $this->getVideos(),
+    //         "pictures"    => $this->getPictures()
+    //     ];
+    // }
 }

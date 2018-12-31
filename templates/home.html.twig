@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <section>
+        {# Title #}
+        <div class="row">
+            <div class="col-lg-4">  
+                <br>
+                <h1>Index</h1>
+                <br>
+                <a href="{{ path('trick_create') }}" class="btn btn-primary">New Trick</a>
+                <hr>
+            </div> 
+        </div> 
+
+        {# Trick Loop #}
+        <div class="row">
+            {% for trick in pagination.data %}  
+                <div class="col-lg-4">
+                    <div class="card mb-3"> 
+                        <h3 class="card-header">{{ trick.name }}</h3>
+                        <img style="height: 200px; width: 100%; display: block;" src="{{ trick.getPictures()[0].url }}" alt="Card image">
+                    </div>
+                    <br>
+                    {# Buttons #}
+                    <a href="{{ path('trick_show', { 'slug': trick.slug }) }}">
+                        <button type="button" class="btn btn-secondary">Lire</button>
+                    </a>                                 
+                    <a href="{{ path('trick_modify', { 'slug': trick.slug }) }}">
+                        <button type="button" class="btn btn-warning">Modifier</button> 
+                    </a>                                                          
+                    <a href="{{ path('trick_delete', { 'slug': trick.slug }) }}">
+                        <button type="button" class="btn btn-danger">Effacer</button>
+                    </a>                   
+                    <hr>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# Pagination #}
+        <div class="d-flex justify-content-center">
+            {% set page = pagination.page %} 
+            {% set pages = pagination.pages %} 
+            <ul class="pagination">
+                <li class="page-item {% if page == 1 %} disabled {% endif %}">
+                    <a class="page-link" href="{{ path('homepage', {'page': page - 1}) }}">&laquo;</a>
+                </li>
+
+                {# Pagination loop #}
+                {% for i in 1..pages %}                  
+                    <li class="page-item {% if page == i %} active {% endif %}">
+                        <a class="page-link" href="{{ path('homepage', {'page': i}) }}">{{ i }}</a>
+                    </li>
+                {% endfor %}
+
+                <li class="page-item {% if page == pages %} disabled {% endif %}">
+                    <a class="page-link" href="{{ path('homepage', {'page': page + 1}) }}">&raquo;</a>
+                </li>
+            </ul>
+        </div>
+
+        {# Load More Button #}
+        <div class="row">
+            <div class="col">
+                <br>
+                <p class="text-center">
+                    <a href="{{ path('load_more_tricks') }}" class="js-load-tricks" >
+                        <button type="button" class="btn btn-secondary js-load-tricks" value="5">Load more</button>
+                    </a>  
+                </p>
+                <br>
+            </div>
+        </div>
+        {# Trick loaded #}
+        <div class="row js-load-tricks">
+            {# <span class="js-load-tricks">{% if response.data.name is defined %}{{ response.data.name }}{% endif %}</span> #}
+            {# {% if response.data is defined %}
+
+                {{ block("load", "_load_tricks.html.twig") }}
+
+            {% endif %} #}
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script>
+
+        function onClickLoadTricks(event){
+            event.preventDefault();
+
+            const url = this.href;
+            const div = this.querySelectorAll('div.js-load-tricks');
+
+            axios.get(url).then(function(response):any {
+                console.log(response.data);
+                const data = response.data;
+                div.textContent += data;
+                // div.textContent.replace('', 'un texte');
+            });
+        }
+
+        document.querySelectorAll('a.js-load-tricks').forEach(function (link) {
+            link.addEventListener('click', onClickLoadTricks);
+        });
+
+    </script>
+
+{% endblock %}

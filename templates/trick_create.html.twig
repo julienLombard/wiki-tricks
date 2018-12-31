@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% form_theme formTrick 'bootstrap_4_layout.html.twig' %}
+{# {% form_theme form with ['bootstrap_4_layout.html.twig', _self] %} #}
+{# {% form_theme formTrick _self %} #}
+{% form_theme formTrick '_collection.html.twig' %}
+
+{% block body %}
+    <section>
+        {# Title #}
+        <div class="row">
+            <div class="col-lg-4">  
+                <br>
+                <h1>New Trick</h1>
+                <hr>
+            </div>
+        </div>
+
+        {# Form #}
+        <div class="row">
+            <div class="col-lg-10">  
+            
+                {# Form #}
+                {{ form_start(formTrick) }}
+                {# {{ form_error(form.name) }} #}
+                {{ form_row(formTrick.category) }}
+                {{ form_row(formTrick.name, {'attr': {'placeholder': "Nom de la figure"}}) }}
+                {{ form_row(formTrick.content, {'attr': {'placeholder': "Contenu de la figure"}}) }}
+                {# {{ form_row(form.pictures, {'attr': {'placeholder': "Image de couverture"}}) }} #}
+                {# {{ form_widget(formTrick.save) }} #}
+
+                {# <button type="submit" class="btn btn-success" >Ajouter</button> #}
+
+                {{ form_end(formTrick) }}
+
+                {# Buttons #}
+                <br>
+                <a href="{{ path('homepage') }}">
+                    <button type="button" class="btn btn-secondary">Index</button>
+                </a>                                                                                          
+                <hr>
+            </div>  
+        <div>
+    </section>
+{% endblock %}
+
+{# Javscripts #}
+{% block javascripts %}
+
+    <script src="/js/trick.js"></script>
+
+{% endblock %}

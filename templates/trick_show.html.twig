@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {# Trick #}
+    <section>
+        {# Title #}
+        <div class="row">
+            <div class="col-lg-4">  
+                <br>
+                <h1>{{ trick.name }}</h1>
+                <hr>
+            </div>
+        </div>
+
+        <div class="col-lg-10">  
+            <h2>{{ trick.category.name }}</h2>
+            <p>création le :{{ trick.publishedAt | date('d/m/y') }}</p>
+            <img style="height: 400px; width: 100%; display: block;" src="{{ trick.getPictures()[0].url }}" alt="">
+            <br>
+            
+            {# Pictures List #}
+            <div class="row">
+                {% for picture in trick.getPictures() %}
+                    <div class="col-lg-4"> 
+                        <img style="height: 150px; width: 100%; display: block;" src="{{ picture.url }}" alt="">
+                        <br>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            {# Videos List #}
+            <div class="row">
+                {% for video in trick.getVideos() %}
+                    <div class="col-lg-4"> 
+                        <img src="{{ video.url }}" alt="">
+                        <br>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {# Content #}
+            <div class="row">
+                <div class="col-lg-12"> 
+                    <blockquote class="blockquote text-center">
+                        <p>{{ trick.content | raw }}</p>
+                    </blockquote>
+                </div>
+            </div>
+
+            {# Buttons #}
+            <br>
+            <a href="{{ path('homepage') }}">
+                <button type="button" class="btn btn-secondary">Index</button>
+            </a>                                 
+            <a href="{{ path('trick_modify', { 'slug': trick.slug }) }}">
+                <button type="button" class="btn btn-warning">Modifier</button> 
+            </a>                                                          
+            <a href="{{ path('trick_delete', { 'slug': trick.slug }) }}">
+                <button type="button" class="btn btn-danger">Effacer</button>
+            </a>  
+            <hr>
+        </div>  
+    </section>
+
+    {# Comments #}
+    <section>
+        {# Form #}
+        <h2 class="text-center">Poster un commentaire</h2>
+        <div class="row">
+            <div class="col-5">      
+                {{ form_start(commentForm) }}
+
+                {{ form_row(commentForm.user) }}  
+                {{ form_row(commentForm.content, {'attr': {'placeholder': "Commentaire"}}) }}
+
+                <button type="submit" class="btn btn-success" >Commenter</button>
+                {{ form_end(commentForm) }}
+                <hr>
+            </div>
+        </div>
+        <h2 class="text-center">Commentaires</h2>
+        <br>
+        {# Comments Loop #}
+        {% for comment in trick.getComments()|slice(0, 5) %}
+            <div class="row">
+                <div class="col-3">
+                    <blockquote class="blockquote text-center">
+                        <p>{{ comment.getUser().username }} :</p>
+                    </blockquote>
+                </div>
+                <div class="col-6">
+                    <blockquote class="blockquote text-center">
+                        <p>{{ comment.content | raw }}</p>
+                        <hr>
+                    </blockquote>
+                </div>
+            </div>
+        {% endfor  %}
+        {# Load More Button #}
+        <div class="row">
+            <div class="col">
+                <br>
+                <p class="text-center">
+                    <a href="{{ path('homepage') }}" >
+                        <button type="button" class="btn btn-secondary">Load more</button>
+                    </a>  
+                </p>
+                <br>
+            </div>
+        </div>
+    </section>
+{% endblock %}
