@@ -1,0 +1,16 @@
+{# Comments Loop #}
+{% for comment in comments %}
+    <div class="row">
+        <div class="col-3">
+            <blockquote class="blockquote text-center">
+                <p>{{ comment.getUser().username }} :</p>
+            </blockquote>
+        </div>
+        <div class="col-6">
+            <blockquote class="blockquote text-center">
+                <p>{{ comment.content | raw }}</p>
+                <hr>
+            </blockquote>
+        </div>
+    </div>
+{% endfor  %}

@@ -5,6 +5,7 @@
         <title>{% block title %}Wiki-Tricks{% endblock %}</title>
         {% block stylesheets %}
             <link rel="stylesheet" href="https://bootswatch.com/4/materia/bootstrap.min.css">
+            <link href="/css/style.css" rel="stylesheet">
         {% endblock %}
     </head>
     <body>
@@ -38,10 +39,10 @@
         <div class="container">
             {% block body %}{% endblock %}
         </div>
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
-        {% block javascripts %}{% endblock %}
+        {% block javascripts %}
+            <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+        {% endblock %}
     </body>
 </html>

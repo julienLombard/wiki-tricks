@@ -1,7 +1,7 @@
     
     {# Flash message #}
     {% for label, messages in app.flashes %}
-        <div class="container">
+        <div class="container js-flash">
             <div class="alert alert-{{ label }}">
                 {% for label, message in messages %}
                     <p>{{ message }}</p>

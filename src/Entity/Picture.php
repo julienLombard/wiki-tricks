@@ -29,9 +29,9 @@ class Picture
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\Url()
+     * @Assert\File(maxSize="1024k")
      */
-    private $url;
+    private $name;
 
     public function getId(): ?int
     {
@@ -62,14 +62,14 @@ class Picture
         return $this;
     }
 
-    public function getUrl(): ?string
+    public function getName()
     {
-        return $this->url;
+        return $this->name;
     }
 
-    public function setUrl(string $url): self
+    public function setName( $name)
     {
-        $this->url = $url;
+        $this->name = $name;
 
         return $this;
     }

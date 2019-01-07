@@ -14,49 +14,24 @@
         </div> 
 
         {# Trick Loop #}
-        <div class="row">
+        <div class="row" id="list-tricks">
+            {# <div id="confirm"></div>
+            <div id="alert"></div> #}
             {% for trick in pagination.data %}  
                 <div class="col-lg-4">
                     <div class="card mb-3"> 
                         <h3 class="card-header">{{ trick.name }}</h3>
-                        <img style="height: 200px; width: 100%; display: block;" src="{{ trick.getPictures()[0].url }}" alt="Card image">
+                        <img style="height: 200px; width: 100%; display: block;" src="{{ trick.getPictures()[0].name }}" alt="Card image">
                     </div>
                     <br>
                     {# Buttons #}
-                    <a href="{{ path('trick_show', { 'slug': trick.slug }) }}">
-                        <button type="button" class="btn btn-secondary">Lire</button>
-                    </a>                                 
-                    <a href="{{ path('trick_modify', { 'slug': trick.slug }) }}">
-                        <button type="button" class="btn btn-warning">Modifier</button> 
-                    </a>                                                          
-                    <a href="{{ path('trick_delete', { 'slug': trick.slug }) }}">
-                        <button type="button" class="btn btn-danger">Effacer</button>
-                    </a>                   
+                    <a href="{{ path('trick_show', { 'slug': trick.slug }) }}" class="btn btn-secondary">Lire</a>                                 
+                    <a href="{{ path('trick_modify', { 'slug': trick.slug }) }}" class="btn btn-warning">Modifier</a>                                                          
+                    <a href="{{ path('trick_delete', { 'slug': trick.slug }) }}" class="btn btn-danger">Effacer</a>             
+                    <a href="#" class="btn btn-danger js-delete-trick" id="{{ trick.id }}">Effacer</a>          
                     <hr>
                 </div>
             {% endfor %}
-        </div>
-
-        {# Pagination #}
-        <div class="d-flex justify-content-center">
-            {% set page = pagination.page %} 
-            {% set pages = pagination.pages %} 
-            <ul class="pagination">
-                <li class="page-item {% if page == 1 %} disabled {% endif %}">
-                    <a class="page-link" href="{{ path('homepage', {'page': page - 1}) }}">&laquo;</a>
-                </li>
-
-                {# Pagination loop #}
-                {% for i in 1..pages %}                  
-                    <li class="page-item {% if page == i %} active {% endif %}">
-                        <a class="page-link" href="{{ path('homepage', {'page': i}) }}">{{ i }}</a>
-                    </li>
-                {% endfor %}
-
-                <li class="page-item {% if page == pages %} disabled {% endif %}">
-                    <a class="page-link" href="{{ path('homepage', {'page': page + 1}) }}">&raquo;</a>
-                </li>
-            </ul>
         </div>
 
         {# Load More Button #}
@@ -64,9 +39,7 @@
             <div class="col">
                 <br>
                 <p class="text-center">
-                    <a href="{{ path('load_more_tricks') }}" class="js-load-tricks" >
-                        <button type="button" class="btn btn-secondary js-load-tricks" value="5">Load more</button>
-                    </a>  
+                    <a href="#" class="js-load-tricks btn btn-secondary" >Load more</a>  
                 </p>
                 <br>
             </div>
@@ -84,29 +57,68 @@
 {% endblock %}
 
 {% block javascripts %}
-
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
+    {{ parent() }}
     <script>
 
-        function onClickLoadTricks(event){
-            event.preventDefault();
+        $(function() {
 
-            const url = this.href;
-            const div = this.querySelectorAll('div.js-load-tricks');
+            var page = 1;
+            var position;
+            // Load more tricks Button
+            $(".js-load-tricks").on("click", function() {
+                page++;
+                position = $(window).scrollTop(); 
 
-            axios.get(url).then(function(response):any {
-                console.log(response.data);
-                const data = response.data;
-                div.textContent += data;
-                // div.textContent.replace('', 'un texte');
+                $.get("/load/" + page, function(response) {
+                    $("#list-tricks").append(response);
+                    $(window).scrollTop(position);
+                })
             });
-        }
 
-        document.querySelectorAll('a.js-load-tricks').forEach(function (link) {
-            link.addEventListener('click', onClickLoadTricks);
+            // Modal Delete window
+            $(".js-delete-trick").on("click", function() {
+
+                //position = $(window).scrollTop(); 
+                var id = $(this).prop('id');
+                var modalBox ='<div class="card border-danger mb-3 js-confirmation" style="max-width: 20rem;">'
+                                +'<div class="card-body">'
+                                    +'<h4 class="card-title">Êtes-vous sûr ?</h4>'
+                                    +'<a href="#" class="btn btn-danger js-delete">Effacer</a>'
+                                    +'<a href="#" class="btn btn-secondary js-close">Annuler</a>'
+                                +'</div>'
+                            +'</div>'
+                $("#"+id).after(modalBox);
+                //$(window).scrollTop(position);
+
+                closeModal();
+                deleteTrick();
+            });
+
+            // Close Button (Modal Delete window)
+            function closeModal() {
+                $(".js-close").on("click", function() {
+                    $("div.js-confirmation").remove();
+                    //$(window).scrollTop(position);
+                });
+            }
+
+            // Confirm Delete Button (Modal Delete window)
+            function deleteTrick() {
+                $(".js-delete").on("click", function() {
+                    //position = $(window).scrollTop(); 
+                    $.get("/deleteHome/" + id, function(response) {
+
+                        $("div.js-confirmation").remove();
+                        $("#"+id).after(response);
+                        //$(window).scrollTop(position);
+
+                        setTimeout(function() {
+                            $('a.js-delete-trick + .js-flash').remove();
+                            }, 3000)
+                    })
+                });
+            }
         });
-
+                    
     </script>
-
 {% endblock %}

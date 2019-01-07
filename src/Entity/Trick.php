@@ -67,13 +67,13 @@ class Trick
     private $comments;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Video", mappedBy="trick", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\Video", mappedBy="trick", orphanRemoval=true, cascade={"persist", "remove"})
      * @Assert\Valid()
      */
     private $videos;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Picture", mappedBy="trick")
+     * @ORM\OneToMany(targetEntity="App\Entity\Picture", mappedBy="trick", cascade={"persist", "remove"})
      * @Assert\Valid()
      */
     private $pictures;
@@ -254,22 +254,4 @@ class Trick
 
         return $this;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    // function jsonNormalize()
-    // {
-    //     return [
-    //         "id"        => $this->getId(),
-    //         "name"    => $this->getName(),
-    //         "content"    => $this->getContent(),
-    //         "publishedAt"    => $this->getPublishedAt(),
-    //         "modifiedAt"    => $this->getModifiedAt(),
-    //         "category"    => $this->getCategory(),
-    //         "comments"    => $this->getComments(),
-    //         "videos"    => $this->getVideos(),
-    //         "pictures"    => $this->getPictures()
-    //     ];
-    // }
 }

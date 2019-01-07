@@ -82,15 +82,4 @@ class Category
 
         return $this;
     }
-
-    // /**
-    // * {@inheritdoc}
-    // */
-    // function jsonSerialize()
-    // {
-    //     return [
-    //         "id"        => $this->getId(),
-    //         "name"    => $this->getName(),
-    //     ];
-    // }
 }

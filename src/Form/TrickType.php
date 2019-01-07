@@ -29,7 +29,8 @@ class TrickType extends AbstractType
                 [
                     'entry_type' => PictureType::class,
                     'allow_add' => true,
-                    'allow_delete' => true
+                    'allow_delete' => true,
+                    "by_reference"  => false
                 ]
             )
             ->add('videos',
@@ -37,7 +38,8 @@ class TrickType extends AbstractType
                 [
                     'entry_type' => VideoType::class,
                     'allow_add' => true,
-                    'allow_delete' => true
+                    'allow_delete' => true,
+                    "by_reference"  => false
                 ]
             )
             ->add('save', SubmitType::class,

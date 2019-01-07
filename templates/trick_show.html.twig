@@ -15,14 +15,14 @@
         <div class="col-lg-10">  
             <h2>{{ trick.category.name }}</h2>
             <p>création le :{{ trick.publishedAt | date('d/m/y') }}</p>
-            <img style="height: 400px; width: 100%; display: block;" src="{{ trick.getPictures()[0].url }}" alt="">
+            <img style="height: 400px; width: 100%; display: block;" src="{{ asset('pictures/' ~ trick.getPictures()[0].name) }}" alt="">
             <br>
             
             {# Pictures List #}
             <div class="row">
-                {% for picture in trick.getPictures() %}
+                {% for picture in trick.getPictures()|slice(1,1000) %}
                     <div class="col-lg-4"> 
-                        <img style="height: 150px; width: 100%; display: block;" src="{{ picture.url }}" alt="">
+                        <img style="height: 150px; width: 100%; display: block;" src="{{ asset('pictures/' ~ picture.name) }}" alt="">
                         <br>
                     </div>
                 {% endfor %}
@@ -32,7 +32,7 @@
             <div class="row">
                 {% for video in trick.getVideos() %}
                     <div class="col-lg-4"> 
-                        <img src="{{ video.url }}" alt="">
+                        <iframe src="{{ video.url }}" width="40%" frameborder="0" allowfullscreen></iframe> 
                         <br>
                     </div>
                 {% endfor %}
@@ -49,15 +49,9 @@
 
             {# Buttons #}
             <br>
-            <a href="{{ path('homepage') }}">
-                <button type="button" class="btn btn-secondary">Index</button>
-            </a>                                 
-            <a href="{{ path('trick_modify', { 'slug': trick.slug }) }}">
-                <button type="button" class="btn btn-warning">Modifier</button> 
-            </a>                                                          
-            <a href="{{ path('trick_delete', { 'slug': trick.slug }) }}">
-                <button type="button" class="btn btn-danger">Effacer</button>
-            </a>  
+            <a href="{{ path('homepage') }}" class="btn btn-secondary">Index</a>                                 
+            <a href="{{ path('trick_modify', { 'slug': trick.slug }) }}" class="btn btn-warning">Modifier</a>                                                          
+            <a href="{{ path('trick_delete', { 'slug': trick.slug }) }}" class="btn btn-danger">Effacer</a>  
             <hr>
         </div>  
     </section>
@@ -80,33 +74,58 @@
         </div>
         <h2 class="text-center">Commentaires</h2>
         <br>
-        {# Comments Loop #}
-        {% for comment in trick.getComments()|slice(0, 5) %}
-            <div class="row">
-                <div class="col-3">
-                    <blockquote class="blockquote text-center">
-                        <p>{{ comment.getUser().username }} :</p>
-                    </blockquote>
+        <div id="list-comments">
+            {# Comments Loop #}
+            {% for comment in comments %}
+                <div class="row">
+                    <div class="col-3">
+                        <blockquote class="blockquote text-center">
+                            <p>{{ comment.getUser().username }} :</p>
+                        </blockquote>
+                    </div>
+                    <div class="col-6">
+                        <blockquote class="blockquote text-center">
+                            <p>{{ comment.content | raw }}</p>
+                            <hr>
+                        </blockquote>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <blockquote class="blockquote text-center">
-                        <p>{{ comment.content | raw }}</p>
-                        <hr>
-                    </blockquote>
-                </div>
-            </div>
-        {% endfor  %}
+            {% endfor  %}
+        </div>
         {# Load More Button #}
         <div class="row">
             <div class="col">
                 <br>
                 <p class="text-center">
-                    <a href="{{ path('homepage') }}" >
-                        <button type="button" class="btn btn-secondary">Load more</button>
-                    </a>  
+                    <a href="#" class="js-load-comments btn btn-secondary">Load more</a>  
                 </p>
                 <br>
             </div>
         </div>
     </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+
+        $(function() {
+
+            var page = 1;
+            var position;
+
+            $(".js-load-comments").on("click", function() {
+                page++;
+                position = $(window).scrollTop(); 
+
+                $.get("/loadComments/" + {{ trick.id }} + "/" + page, function(response) {
+                    $("#list-comments").append(response);
+                    $(window).scrollTop(position);
+                })
+            });
+
+        });
+
+    </script>
+
 {% endblock %}
