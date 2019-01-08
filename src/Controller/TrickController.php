@@ -11,6 +11,7 @@ use App\Form\VideoType;
 use App\Form\CommentType;
 use App\Form\PictureType;
 use App\Service\Pagination;
+use App\Service\FileUploader;
 use App\Repository\TrickRepository;
 use App\Repository\CommentRepository;
 use Symfony\Component\Filesystem\Filesystem;
@@ -120,7 +121,7 @@ class TrickController extends AbstractController {
      * @param mixed $page
      * @return void
      * 
-     * @Route("/loadComments/{id<\d+>?1}/{page<\d+>?1}", name="load_more_tricks")
+     * @Route("/loadComments/{id<\d+>?1}/{page<\d+>?1}", name="load_more_comments")
      */
     public function loadMorecomments(Trick $trick, CommentRepository $repo, $page): Response {
 
@@ -135,11 +136,12 @@ class TrickController extends AbstractController {
      *
      * @param Request $request
      * @param ObjectManager $manager
+     * @param FileUploader $fileUploader
      * @return void
      * 
      * @Route("/create-trick", name="trick_create")
      */
-    public function createTrick(Request $request, ObjectManager $manager){
+    public function createTrick(Request $request, ObjectManager $manager, FileUploader $fileUploader){
 
         $trick = new Trick();
 
@@ -153,8 +155,9 @@ class TrickController extends AbstractController {
                 // $manager->persist($picture);
 
                 $file = $picture->getName();
-                $fileName = md5(uniqid()).'.'.$file->guessExtension();
-                $file->move($this->getParameter('picture_directory'), $fileName);
+                $fileName = $fileUploader->upload($file);
+                // $fileName = md5(uniqid()).'.'.$file->guessExtension();
+                // $file->move($this->getParameter('picture_directory'), $fileName);
                 $picture->setName($fileName);
             }
 
@@ -186,11 +189,12 @@ class TrickController extends AbstractController {
      * @param Trick $trick
      * @param Request $request
      * @param ObjectManager $manager
+     * @param FileUploader $fileUploader
      * @return void
      * 
      * @Route("/modify-trick/{slug}", name="trick_modify")
      */
-    public function modifyTrick(Trick $trick,Request $request, ObjectManager $manager){
+    public function modifyTrick(Trick $trick,Request $request, ObjectManager $manager, FileUploader $fileUploader){
 
         $form = $this->createForm(TrickType::class, $trick);
         $form->handleRequest($request);
@@ -204,8 +208,9 @@ class TrickController extends AbstractController {
                 // $manager->persist($picture);
 
                 $file = $picture->getName();
-                $fileName = md5(uniqid()).'.'.$file->guessExtension();
-                $file->move($this->getParameter('picture_directory'), $fileName);
+                $fileName = $fileUploader->upload($file);
+                // $fileName = md5(uniqid()).'.'.$file->guessExtension();
+                // $file->move($this->getParameter('picture_directory'), $fileName);
                 $picture->setName($fileName);
             }
 
