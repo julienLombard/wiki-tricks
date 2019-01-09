@@ -15,7 +15,7 @@
         <div class="col-lg-10">  
             <h2>{{ trick.category.name }}</h2>
             <p>création le :{{ trick.publishedAt | date('d/m/y') }}</p>
-            <img style="height: 400px; width: 100%; display: block;" src="{{ asset('pictures/' ~ trick.getPictures()[0].name) }}" alt="">
+                <img style="height: 400px; width: 100%; display: block;" src="{{ asset('pictures/' ~ trick.getPictures()[0].name) }}" alt="">
             <br>
             
             {# Pictures List #}

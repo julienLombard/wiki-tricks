@@ -27,11 +27,11 @@ class FileUploader
         return $fileName;
     }
 
-    // public function removeFile(Picture $picture){
-    //     $fileName = $picture->getName();
-    //     $filesystem = new Filesystem();
-    //     $filesystem->remove($fileName);
-    // }
+    public function removeFile(Picture $picture){
+        $fileName = $picture->getName();
+        $filesystem = new Filesystem();
+        $filesystem->remove($fileName);
+    }
 
     public function getTargetDirectory()
     {
