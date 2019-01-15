@@ -8,7 +8,9 @@
                 <br>
                 <h1>Index</h1>
                 <br>
-                <a href="{{ path('trick_create') }}" class="btn btn-primary">New Trick</a>
+                {% if app.user %}
+                    <a href="{{ path('trick_create') }}" class="btn btn-primary">New Trick</a>
+                {% endif %}
                 <hr>
             </div> 
         </div> 
@@ -25,10 +27,11 @@
                     </div>
                     <br>
                     {# Buttons #}
-                    <a href="{{ path('trick_show', { 'slug': trick.slug }) }}" class="btn btn-secondary">Lire</a>                                 
-                    <a href="{{ path('trick_modify', { 'slug': trick.slug }) }}" class="btn btn-warning">Modifier</a>                                                          
-                    <a href="{{ path('trick_delete', { 'slug': trick.slug }) }}" class="btn btn-danger">Effacer</a>             
-                    <a href="#" class="btn btn-danger js-delete-trick" id="{{ trick.id }}">Effacer</a>          
+                    {% if app.user %}
+                        <a href="{{ path('trick_show', { 'slug': trick.slug }) }}" class="btn btn-secondary">Lire</a>                                 
+                        <a href="{{ path('trick_modify', { 'slug': trick.slug }) }}" class="btn btn-warning">Modifier</a>          
+                        <a href="#" class="btn btn-danger js-delete-trick" id="{{ trick.id }}">Effacer</a>
+                    {% endif %}      
                     <hr>
                 </div>
             {% endfor %}
