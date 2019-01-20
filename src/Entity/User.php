@@ -6,8 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -16,7 +16,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *  message="Email déjà enregistré"
  * )
  */
-class User implements UserInterface
+class User implements AdvancedUserInterface
 {
     /**
      * @ORM\Id()
@@ -48,7 +48,12 @@ class User implements UserInterface
     private $registeredAt;
 
     /**
-     * @ORM\Column(type="boolean", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $confirmationToken;
+
+    /**
+     * @ORM\Column(type="boolean", length=30, nullable=true)
      */
     private $validate;
 
@@ -116,6 +121,18 @@ class User implements UserInterface
     public function setRegisteredAt(\DateTimeImmutable $registeredAt): self
     {
         $this->registeredAt = $registeredAt;
+
+        return $this;
+    }
+
+    public function getConfirmationToken(): ?string
+    {
+        return $this->confirmationToken;
+    }
+
+    public function setConfirmationToken(string $confirmationToken): self
+    {
+        $this->confirmationToken = $confirmationToken;
 
         return $this;
     }
@@ -189,4 +206,24 @@ class User implements UserInterface
     public function getSalt() {}
 
     public function eraseCredentials() {}
+
+    public function isAccountNonExpired()
+    {
+        return true;
+    }
+
+    public function isAccountNonLocked()
+    {
+        return true;
+    }
+
+    public function isCredentialsNonExpired()
+    {
+        return true;
+    }
+
+    public function isEnabled()
+    {
+        return $this->validate;
+    }
 }
