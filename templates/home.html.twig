@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <section>
+        {# Title #}
+        <div class="row">
+            <div class="col-lg-4">  
+                <br>
+                <h1>Index</h1>
+                <br>
+                <a href="{{ path('trick_create') }}" class="btn btn-primary">New Trick</a>
+                <hr>
+            </div> 
+        </div> 
+
+        {# Trick Loop #}
+        <div class="row" id="list-tricks">
+            {# <div id="confirm"></div>
+            <div id="alert"></div> #}
+            {% for trick in pagination.data %}  
+                <div class="col-lg-4">
+                    <div class="card mb-3"> 
+                        <h3 class="card-header">{{ trick.name }}</h3>
+                        <img style="height: 200px; width: 100%; display: block;" src="{{ trick.getPictures()[0].name }}" alt="Card image">
+                    </div>
+                    <br>
+                    {# Buttons #}
+                    <a href="{{ path('trick_show', { 'slug': trick.slug }) }}" class="btn btn-secondary">Lire</a>                                 
+                    <a href="{{ path('trick_modify', { 'slug': trick.slug }) }}" class="btn btn-warning">Modifier</a>                                                          
+                    <a href="{{ path('trick_delete', { 'slug': trick.slug }) }}" class="btn btn-danger">Effacer</a>             
+                    <a href="#" class="btn btn-danger js-delete-trick" id="{{ trick.id }}">Effacer</a>          
+                    <hr>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# Load More Button #}
+        <div class="row">
+            <div class="col">
+                <br>
+                <p class="text-center">
+                    <a href="#" class="js-load-tricks btn btn-secondary" >Load more</a>  
+                </p>
+                <br>
+            </div>
+        </div>
+        {# Trick loaded #}
+        <div class="row js-load-tricks">
+            {# <span class="js-load-tricks">{% if response.data.name is defined %}{{ response.data.name }}{% endif %}</span> #}
+            {# {% if response.data is defined %}
+
+                {{ block("load", "_load_tricks.html.twig") }}
+
+            {% endif %} #}
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+
+        $(function() {
+
+            var page = 1;
+            var position;
+            // Load more tricks Button
+            $(".js-load-tricks").on("click", function() {
+                page++;
+                position = $(window).scrollTop(); 
+
+                $.get("/load/" + page, function(response) {
+                    $("#list-tricks").append(response);
+                    $(window).scrollTop(position);
+                })
+            });
+
+            // Modal Delete window
+            $(".js-delete-trick").on("click", function() {
+
+                //position = $(window).scrollTop(); 
+                var id = $(this).prop('id');
+                var modalBox ='<div class="card border-danger mb-3 js-confirmation" style="max-width: 20rem;">'
+                                +'<div class="card-body">'
+                                    +'<h4 class="card-title">Êtes-vous sûr ?</h4>'
+                                    +'<a href="#" class="btn btn-danger js-delete">Effacer</a>'
+                                    +'<a href="#" class="btn btn-secondary js-close">Annuler</a>'
+                                +'</div>'
+                            +'</div>'
+                $("#"+id).after(modalBox);
+                //$(window).scrollTop(position);
+
+                closeModal();
+                deleteTrick();
+            });
+
+            // Close Button (Modal Delete window)
+            function closeModal() {
+                $(".js-close").on("click", function() {
+                    $("div.js-confirmation").remove();
+                    //$(window).scrollTop(position);
+                });
+            }
+
+            // Confirm Delete Button (Modal Delete window)
+            function deleteTrick() {
+                $(".js-delete").on("click", function() {
+                    //position = $(window).scrollTop(); 
+                    $.get("/deleteHome/" + id, function(response) {
+
+                        $("div.js-confirmation").remove();
+                        $("#"+id).after(response);
+                        //$(window).scrollTop(position);
+
+                        setTimeout(function() {
+                            $('a.js-delete-trick + .js-flash').remove();
+                            }, 3000)
+                    })
+                });
+            }
+        });
+                    
+    </script>
+{% endblock %}
