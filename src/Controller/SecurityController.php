@@ -3,19 +3,22 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Security\Token;
+use App\Service\Mailer;
 use App\Form\RegistrationType;
+use App\Form\ResetPasswordType;
 use App\Event\UserRegisterEvent;
-use App\Security\TokenGenerator;
+use App\Form\ForgotPasswordType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+// use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+// use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class SecurityController extends AbstractController
 {
@@ -33,16 +36,6 @@ class SecurityController extends AbstractController
         $error = $authenticationUtils->getLastAuthenticationError();
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
-
-        $message = (new \Swift_Message('You Got Mail!'))
-            ->setFrom('jlombard.test5@gmail.com')
-            ->setTo('jlombard.test5@gmail.com')
-            ->setBody('vous êtes connecté');
-
-        $mailer->send($message);
-
-        // dump($error);
-        // exit;
 
         return $this->render('security/login.html.twig', [ 
             'hasError' => $error !== null,
@@ -64,16 +57,14 @@ class SecurityController extends AbstractController
     /**
      * register
      *
-     * @return void
+     * @return Response
      * 
      * @Route("/register", name="security_register")
      */
     public function register(
         Request $request, 
         ObjectManager $manager, 
-        UserPasswordEncoderInterface $encoder, 
-        EventDispatcherInterface $eventDispatcher,
-        TokenGenerator $tokenGenerator
+        Token $token
     ) {
         $user = new User();
 
@@ -82,23 +73,9 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
-            $password = $encoder->encodePassword($user, $user->getPassword());
-            $user->setPassword($password);
-            $user->setConfirmationToken($tokenGenerator->getRandomSecureToken(30));
-            $user->setValidate(False);
-            $user->setRegisteredAt(new \DateTimeImmutable());
 
             $manager->persist($user);
             $manager->flush();
-
-            $userRegisterEvent = new UserRegisterEvent($user);
-            $eventDispatcher->dispatch(
-                UserRegisterEvent::NAME,
-                $userRegisterEvent
-            );
-
-            //Envoyer un email qui contient l'id/username de l'utilisateur
-            // et qui contient un lien vers une route qui va configurer validate=true
 
             $this->addFlash(
                 'success', 
@@ -114,6 +91,10 @@ class SecurityController extends AbstractController
     }
 
     /**
+     * confirm
+     * 
+     * @return Response
+     * 
      * @Route("/confirm/{token}", name="security_confirm")
      */
     public function confirm(
@@ -140,5 +121,106 @@ class SecurityController extends AbstractController
                 ]
             )
         );
+    }
+
+    /**
+     * forgotPassword
+     * 
+     * @return Response
+     * 
+     * @Route("/forgot-password", name="security_forgot_password")
+     */
+    public function forgotPassword(
+        Request $request, 
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        Mailer $mailer,
+        Token $token
+    ) {
+        $user = new User();
+
+        $form = $this->createForm(ForgotPasswordType::class, $user);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()) {
+
+            $user = $userRepository->findOneBy([
+                'username' => $user->getUsername()
+            ]);
+
+            if(null !== $user) {
+
+                $user->setResetToken($token->getToken(30));
+                $entityManager->flush();
+
+                $mailer->sendResetPassword($user);
+
+                $this->addFlash(
+                    'success', 
+                    "Votre demande reinitialisation a été prise en compte ! Un Email de vérification vous a été envoyé"
+                );
+
+                return $this->redirectToRoute('homepage');
+            }
+
+            return $this->render('security/forgot_password.html.twig', [
+                'form' => $form->createView(),
+                'error' => "Nom d'utilisateur inconnu"
+            ]);
+        }
+
+        return $this->render('security/forgot_password.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * resetPassword
+     * 
+     * @return Response
+     * 
+     * @Route("/reset-password/{token}", name="security_reset_password")
+     */
+    public function resetPassword(
+        Request $request,
+        string $token,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager
+    ) {
+        $user = $userRepository->findOneBy([
+            'resetToken' => $token
+        ]);
+
+        if (null !== $user) {
+            
+            $form = $this->createForm(ResetPasswordType::class, $user);
+            $form->handleRequest($request);
+
+            if($form->isSubmitted() && $form->isValid()) {
+
+                $user->setResetToken('');
+                $entityManager->flush();
+
+                $this->addFlash(
+                    'success', 
+                    "Votre mot de passe a bien été modifié !"
+                );
+
+                return $this->redirectToRoute('homepage');
+            }
+
+            return new Response(
+                $this->render(
+                    'security/reset_password.html.twig',
+                    [
+                        'user' => $user,
+                        'form' => $form->createView()
+                    ]
+                )
+            );
+        }
+
+        return $this->redirectToRoute('homepage');
     }
 }

@@ -35,6 +35,22 @@ services:
         arguments:
             $targetDirectory: '%picture_directory%'
 
-    App\Mailer\Mailer:
+    App\Service\Mailer:
         arguments:
-            $mailFrom: 'email_from'
+            $mailFrom: '%email_from%'
+
+    # App\EventListener\UserListener:
+    #     tags:
+    #         - { name: doctrine.event_listener, event: prePersist }
+    #         - { name: doctrine.event_listener, event: preUpdate }
+
+    user_listener:
+        class: App\EventListener\UserListener
+        tags:
+            - { name: doctrine.orm.entity_listener }
+            -
+                name: doctrine.orm.entity_listener
+                event: prePersist, preUpdate
+                entity: App\Entity\User
+                entity_manager: custom
+            

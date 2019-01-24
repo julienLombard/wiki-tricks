@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\EntityListeners;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -15,6 +16,7 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  *  fields={"email"},
  *  message="Email déjà enregistré"
  * )
+ * @EntityListeners({"App\EventListener\UserListener"})
  */
 class User implements AdvancedUserInterface
 {
@@ -38,6 +40,12 @@ class User implements AdvancedUserInterface
     private $email;
 
     /**
+     * User's plain password
+     * @var string|null
+     */
+    private $plainPassword;
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
     private $password;
@@ -56,6 +64,11 @@ class User implements AdvancedUserInterface
      * @ORM\Column(type="boolean", length=30, nullable=true)
      */
     private $validate;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $resetToken;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="user", orphanRemoval=true)
@@ -97,6 +110,18 @@ class User implements AdvancedUserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword($plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
 
         return $this;
     }
@@ -145,6 +170,18 @@ class User implements AdvancedUserInterface
     public function setValidate(?bool $validate): self
     {
         $this->validate = $validate;
+
+        return $this;
+    }
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(string $resetToken): self
+    {
+        $this->resetToken = $resetToken;
 
         return $this;
     }
@@ -225,5 +262,10 @@ class User implements AdvancedUserInterface
     public function isEnabled()
     {
         return $this->validate;
+    }
+
+    public function setRegisterDate()
+    {
+        $this->registeredAt = new \DateTimeImmutable;
     }
 }

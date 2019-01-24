@@ -2,11 +2,11 @@
 
 namespace App\Security;
 
-class TokenGenerator
+class Token
 {
     private const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-    public function getRandomSecureToken(int $length): string
+    public function getToken(int $length): string
     {
         $maxNumber = strlen(self::ALPHABET);
         $token = '';

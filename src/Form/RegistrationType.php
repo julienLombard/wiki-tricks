@@ -10,6 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class RegistrationType extends AbstractType
@@ -37,7 +38,12 @@ class RegistrationType extends AbstractType
         $builder
             ->add('username', TextType::class, $this->getConfiguration("Identifiant", "Votre identifiant ..."))
             ->add('email', EmailType::class, $this->getConfiguration("Email", "Votre email ..."))
-            ->add('password', PasswordType::class, $this->getConfiguration("Mot de passe", "Votre mot de passe ..."))
+            // ->add('password', PasswordType::class, $this->getConfiguration("Mot de passe", "Votre mot de passe ..."))
+            ->add('plainPassword', RepeatedType::class, [
+                'type' => PasswordType::class, 
+                'first_options' => $this->getConfiguration("Mot de passe", "Votre mot de passe ..."),
+                'second_options' => $this->getConfiguration("Confirmation du mot de passe", "Confirmer votre mot de passe ...")
+            ])
             // ->add('registeredAt')
             // ->add('validate')
             // ->add('picture',
