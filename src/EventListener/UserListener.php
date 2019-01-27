@@ -27,6 +27,7 @@ class UserListener
 
         $user->setConfirmationToken($this->token->getToken(30));
         $user->setValidate(False);
+        $user->setRoles([User::ROLE_ADMIN]);
         $user->setRegisterDate();
 
         $this->mailer->sendConfirmationEmail($user);

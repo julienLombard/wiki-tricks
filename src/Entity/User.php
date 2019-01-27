@@ -20,6 +20,10 @@ use Symfony\Component\Security\Core\User\AdvancedUserInterface;
  */
 class User implements AdvancedUserInterface
 {
+
+    const ROLE_USER = 'ROLE_USER';
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -66,6 +70,12 @@ class User implements AdvancedUserInterface
     private $validate;
 
     /**
+     * @var array
+     * @ORM\Column(type="simple_array", nullable=true)
+     */
+    private $roles;
+
+    /**
      * @ORM\Column(type="string", nullable=true)
      */
     private $resetToken;
@@ -83,6 +93,7 @@ class User implements AdvancedUserInterface
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->roles = [self::ROLE_USER];
     }
 
     public function getId(): ?int
@@ -174,6 +185,19 @@ class User implements AdvancedUserInterface
         return $this;
     }
 
+    public function getRoles()
+    {
+        return $this->roles;
+    }
+
+    /**
+     * @param array $roles
+     */
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
+    }
+
     public function getResetToken(): ?string
     {
         return $this->resetToken;
@@ -235,10 +259,10 @@ class User implements AdvancedUserInterface
         return $this;
     }
 
-    public function getRoles() 
-    {
-        return ['ROLE_USER'];
-    }
+    // public function getRoles() 
+    // {
+    //     return ['ROLE_USER'];
+    // }
 
     public function getSalt() {}
 
