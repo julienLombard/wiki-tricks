@@ -247,7 +247,11 @@ class TrickController extends AbstractController {
      * 
      * @Route("/delete/{slug}", name="trick_delete")
      */
-    public function deleteTrick(Trick $trick, ObjectManager $manager){
+    public function deleteTrick(Trick $trick, ObjectManager $manager, FileUploader $fileUploader){
+
+        // foreach ($trick->getPictures() as $picture) {
+        //     $fileUploader->remove($picture);
+        // }
 
         $manager->remove($trick);
         $manager->flush();

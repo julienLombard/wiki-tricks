@@ -49,29 +49,36 @@
 
             {# Buttons #}
             <br>
-            <a href="{{ path('homepage') }}" class="btn btn-secondary">Index</a>                                 
-            <a href="{{ path('trick_modify', { 'slug': trick.slug }) }}" class="btn btn-warning">Modifier</a>                                                          
-            <a href="{{ path('trick_delete', { 'slug': trick.slug }) }}" class="btn btn-danger">Effacer</a>  
+            <a href="{{ path('homepage') }}" class="btn btn-secondary">Index</a>
+            {% if app.user %}                                 
+                <a href="{{ path('trick_modify', { 'slug': trick.slug }) }}" class="btn btn-warning">Modifier</a>                                                          
+                <a href="{{ path('trick_delete', { 'slug': trick.slug }) }}" class="btn btn-danger">Effacer</a>
+            {% endif %}
             <hr>
         </div>  
     </section>
 
     {# Comments #}
     <section>
+
         {# Form #}
-        <h2 class="text-center">Poster un commentaire</h2>
-        <div class="row">
-            <div class="col-5">      
-                {{ form_start(commentForm) }}
+        {% if app.user %}
+            <h2 class="text-center">Poster un commentaire</h2>
+            <div class="row">
+                <div class="col-5">      
+                    {{ form_start(commentForm) }}
 
-                {{ form_row(commentForm.user) }}  
-                {{ form_row(commentForm.content, {'attr': {'placeholder': "Commentaire"}}) }}
+                    {{ form_row(commentForm.user) }}  
+                    {{ form_row(commentForm.content, {'attr': {'placeholder': "Commentaire"}}) }}
 
-                <button type="submit" class="btn btn-success" >Commenter</button>
-                {{ form_end(commentForm) }}
-                <hr>
+                    <button type="submit" class="btn btn-success" >Commenter</button>
+                    {{ form_end(commentForm) }}
+                    <hr>
+                </div>
             </div>
-        </div>
+        {% endif %}
+
+        {# Comments list #}
         <h2 class="text-center">Commentaires</h2>
         <br>
         <div id="list-comments">

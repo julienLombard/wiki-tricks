@@ -25,7 +25,7 @@ class AppFixtures extends Fixture
         $user->setEmail('user@gmail.com');
         $user->setPassword('0000');
         $user->setRegisteredAt(new \DateTimeImmutable());
-        $user->setValidate(true);
+        // $user->setValidate(true);
         $user->setPicture($picture);
         $manager->persist($user);
 
