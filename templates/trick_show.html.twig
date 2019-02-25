@@ -68,7 +68,6 @@
                 <div class="col-5">      
                     {{ form_start(commentForm) }}
 
-                    {{ form_row(commentForm.user) }}  
                     {{ form_row(commentForm.content, {'attr': {'placeholder': "Commentaire"}}) }}
 
                     <button type="submit" class="btn btn-success" >Commenter</button>
@@ -85,6 +84,9 @@
             {# Comments Loop #}
             {% for comment in comments %}
                 <div class="row">
+                    <div class="offset-2 col-1">
+                        <img style="height: 20px; width: 100%; display: block;" src="{{ asset('pictures/' ~ comment.getUser().picture.getName()) }}" alt="">
+                    </div>
                     <div class="col-3">
                         <blockquote class="blockquote text-center">
                             <p>{{ comment.getUser().username }} :</p>

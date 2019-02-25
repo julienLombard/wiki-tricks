@@ -3,16 +3,18 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Picture;
 use App\Security\Token;
 use App\Service\Mailer;
+use App\Service\FileUploader;
 use App\Form\RegistrationType;
 use App\Form\ResetPasswordType;
 use App\Event\UserRegisterEvent;
 use App\Form\ForgotPasswordType;
 use App\Repository\UserRepository;
+// use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
-// use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -64,7 +66,8 @@ class SecurityController extends AbstractController
     public function register(
         Request $request, 
         ObjectManager $manager, 
-        Token $token
+        Token $token,
+        FileUploader $fileUploader
     ) {
         $user = new User();
 
@@ -73,6 +76,10 @@ class SecurityController extends AbstractController
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
+            // dd($user->getPicture());
+            if (!null == $user->getPicture()) {
+                $fileUploader->checkPictureName($user->getPicture());
+            }
 
             $manager->persist($user);
             $manager->flush();

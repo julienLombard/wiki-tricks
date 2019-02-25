@@ -3,10 +3,12 @@
 namespace App\Form;
 
 use App\Entity\Trick;
+use App\Entity\Picture;
 use App\Form\VideoType;
 use App\Entity\Category;
 use App\Form\PictureType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -30,7 +32,8 @@ class TrickType extends AbstractType
                     'entry_type' => PictureType::class,
                     'allow_add' => true,
                     'allow_delete' => true,
-                    "by_reference"  => false
+                    'by_reference'  => false,
+                    'required' => false
                 ]
             )
             ->add('videos',
@@ -39,7 +42,7 @@ class TrickType extends AbstractType
                     'entry_type' => VideoType::class,
                     'allow_add' => true,
                     'allow_delete' => true,
-                    "by_reference"  => false
+                    'by_reference'  => false
                 ]
             )
             ->add('save', SubmitType::class,
@@ -58,6 +61,9 @@ class TrickType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Trick::class,
+            // 'empty_data' => function (FormInterface $form) {
+            //     return new Picture($form->get('name')->getData());
+            // },
         ]);
     }
 }

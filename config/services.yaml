@@ -39,10 +39,10 @@ services:
         arguments:
             $mailFrom: '%email_from%'
 
-    # App\EventListener\UserListener:
-    #     tags:
-    #         - { name: doctrine.event_listener, event: prePersist }
-    #         - { name: doctrine.event_listener, event: preUpdate }
+    App\EventListener\PictureListener:
+        tags:
+            - { name: doctrine.event_listener, event: preFlush }
+            - { name: doctrine.event_listener, event: preRemove }
 
     user_listener:
         class: App\EventListener\UserListener
@@ -53,4 +53,13 @@ services:
                 event: prePersist, preUpdate
                 entity: App\Entity\User
                 entity_manager: custom
-            
+
+    # picture_listener:
+    #     class: App\EventListener\PictureListener
+    #     tags:
+    #         - { name: doctrine.orm.entity_listener }
+    #         -
+    #             name: doctrine.orm.entity_listener
+    #             event: preUpdate, preDelete
+    #             entity: App\Entity\Picture
+    #             entity_manager: custom       

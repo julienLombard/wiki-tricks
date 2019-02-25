@@ -20,8 +20,10 @@ class PictureType extends AbstractType
             //     ]
             // ])
             ->add('name', FileType::class, [
+                'label' => false,
+                'required' => false,
                 'attr' => [
-                    'placeholder' => "Charger l'image",
+                    'placeholder' => "Charger l'image"
                 ],
                 'data_class' => null
             ])

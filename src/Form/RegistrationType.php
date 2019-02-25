@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\PictureType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -46,15 +47,10 @@ class RegistrationType extends AbstractType
             ])
             // ->add('registeredAt')
             // ->add('validate')
-            // ->add('picture',
-            // CollectionType::class,
-            // [
-            //     'entry_type' => PictureType::class,
-            //     'allow_add' => true,
-            //     'allow_delete' => true,
-            //     "by_reference"  => false
-            // ]
-        // )
+            ->add('picture', PictureType::class, [
+                'label' => "Avatar",
+                'required' => false
+            ])
         ;
     }
 
