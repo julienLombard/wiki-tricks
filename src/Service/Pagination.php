@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class Pagination
@@ -21,7 +21,7 @@ class Pagination {
      * @param ObjectManager $manager
      * @return void
      */
-    public function __construct(ObjectManager $manager) {
+    public function __construct(EntityManagerInterface $manager) {
         $this->manager = $manager;
     }
 

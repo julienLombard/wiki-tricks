@@ -3,6 +3,7 @@
 namespace App\EventListener;
 
 use App\Entity\User;
+use App\Entity\Picture;
 use App\Security\Token;
 use App\Service\Mailer;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -10,6 +11,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserListener
 {
+    const DEFAULT_AVATAR = 'ba842b987877357e9758acdd5946d67a.png';
 
     public function __construct(
         Mailer $mailer, 
@@ -29,6 +31,8 @@ class UserListener
         $user->setValidate(False);
         $user->setRoles([User::ROLE_ADMIN]);
         $user->setRegisterDate();
+        
+        $this->setDefaultAvatar($user);
 
         $this->mailer->sendConfirmationEmail($user);
     }
@@ -46,5 +50,19 @@ class UserListener
 
         $user->setPassword($this->encoder->encodePassword($user, $user->getPlainPassword()));
         $user->setPlainPassword(null);
+    }
+
+    public function setDefaultAvatar(User $user)
+    {
+        $picture = $user->getPicture();
+        
+        if (!null === $picture) {
+            return;
+        }
+
+        $picture = new Picture;
+        $picture->setName(self::DEFAULT_AVATAR);
+        
+        $user->setPicture($picture);
     }
 }

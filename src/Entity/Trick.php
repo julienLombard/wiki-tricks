@@ -78,6 +78,8 @@ class Trick
      */
     private $pictures;
 
+    // const DEFAULT_PICTURE = 'ba842b987877357e9758acdd5946d67a.png';
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -254,4 +256,18 @@ class Trick
 
         return $this;
     }
+
+    // public function setDefaultPicture()
+    // {
+    //     $picture = $this->getPictures();
+        
+    //     if (!null === $picture) {
+    //         return;
+    //     }
+
+    //     $picture = new Picture;
+    //     $picture->setName(self::DEFAULT_PICTURE);
+        
+    //     $this->addPicture($picture);
+    // }
 }

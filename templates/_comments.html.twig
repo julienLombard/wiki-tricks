@@ -1,6 +1,9 @@
 {# Comments Loop #}
 {% for comment in comments %}
     <div class="row">
+        <div class="offset-2 col-1">
+            <img style="height: 20px; width: 100%; display: block;" src="{{ asset('pictures/' ~ comment.getUser().picture.getName()) }}" alt="">
+        </div>
         <div class="col-3">
             <blockquote class="blockquote text-center">
                 <p>{{ comment.getUser().username }} :</p>

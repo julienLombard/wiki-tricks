@@ -32,13 +32,12 @@ class TrickController extends AbstractController {
     /**
      * index
      *
-     * @param TrickRepository $repo
      * @param Pagination $pagination
      * @return void
      * 
      * @Route("/", name="homepage")
      */
-    public function index(TrickRepository $repo, Pagination $pagination){
+    public function index(Pagination $pagination){
         
         $pagination->setEntityClass(Trick::class)
                     ->setLimit(9)
@@ -86,19 +85,18 @@ class TrickController extends AbstractController {
         
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
-
+        
         // $pagination->setEntity(Comment::class)
         // ->setPage($page);
-
         if ($form->isSubmitted() && $form->isValid()) {
 
             $comment->setPublishedAt(new \DateTimeImmutable())
-                    ->setTrick($trick);
-                    // ->setUser($user);
+                    ->setTrick($trick)
+                    ->setUser($this->getUser());
 
             $manager->persist($comment);
             $manager->flush();
-
+            
             return $this->redirectToRoute('trick_show', [
                 'slug' => $trick->getSlug(),
                 'comments' => $comments
@@ -161,6 +159,8 @@ class TrickController extends AbstractController {
                 $picture->setName($fileName);
             }
 
+            $fileUploader->setDefaultPicture($trick);
+
             // foreach ($trick->getVideos() as $video) {
             //     $video->setTrick($trick);
             //     $manager->persist($video);
@@ -200,18 +200,10 @@ class TrickController extends AbstractController {
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-           
-            foreach ($trick->getPictures() as $picture) {
-                //     $filesystem = new Filesystem();
-                //     $fileSystem->remove(array('picture_directory', '%kernel.project_dir%/public/pictures/', $file));
-                // $picture->setTrick($trick);
-                // $manager->persist($picture);
 
-                $file = $picture->getName();
-                $fileName = $fileUploader->upload($file);
-                // $fileName = md5(uniqid()).'.'.$file->guessExtension();
-                // $file->move($this->getParameter('picture_directory'), $fileName);
-                $picture->setName($fileName);
+            foreach ($trick->getPictures() as $picture) {
+
+                $fileUploader->checkPictureName($picture);
             }
 
             // foreach ($trick->getVideos() as $video) {
@@ -247,11 +239,7 @@ class TrickController extends AbstractController {
      * 
      * @Route("/delete/{slug}", name="trick_delete")
      */
-    public function deleteTrick(Trick $trick, ObjectManager $manager, FileUploader $fileUploader){
-
-        // foreach ($trick->getPictures() as $picture) {
-        //     $fileUploader->remove($picture);
-        // }
+    public function deleteTrick(Trick $trick, ObjectManager $manager){
 
         $manager->remove($trick);
         $manager->flush();
@@ -271,7 +259,7 @@ class TrickController extends AbstractController {
      * @param ObjectManager $manager
      * @return void
      * 
-     * @Route("/deleteHome/{id<\d+>?1}", name="trick_delete")
+     * @Route("/deleteHome/{id<\d+>?1}", name="trick_delete_home")
      */
     public function deleteHomeTrick(Trick $trick, ObjectManager $manager){
 

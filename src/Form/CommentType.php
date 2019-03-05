@@ -2,12 +2,13 @@
 
 namespace App\Form;
 
-use App\Entity\Comment;
 use App\Entity\User;
+use App\Entity\Comment;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class CommentType extends AbstractType
 {
@@ -17,10 +18,14 @@ class CommentType extends AbstractType
             ->add('content')
             // ->add('publishedAt')
             // ->add('trick')
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'userName'
-            ])
+            // ->add('user', HiddenType::class, [
+            //     'label' => false
+            // ])
+            // ->add('user', EntityType::class, [
+            //     'class' => User::class,
+            //     'choice_label' => 'username',
+            //     'disabled' => true
+            // ])
         ;
     }
 

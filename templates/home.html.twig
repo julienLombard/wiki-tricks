@@ -74,6 +74,7 @@
 
                 $.get("/load/" + page, function(response) {
                     $("#list-tricks").append(response);
+
                     $(window).scrollTop(position);
                 })
             });
@@ -86,7 +87,7 @@
                 var modalBox ='<div class="card border-danger mb-3 js-confirmation" style="max-width: 20rem;">'
                                 +'<div class="card-body">'
                                     +'<h4 class="card-title">Êtes-vous sûr ?</h4>'
-                                    +'<a href="#" class="btn btn-danger js-delete">Effacer</a>'
+                                    +'<a href="#" class="btn btn-danger js-delete '+id+'">Effacer</a>'
                                     +'<a href="#" class="btn btn-secondary js-close">Annuler</a>'
                                 +'</div>'
                             +'</div>'
@@ -109,10 +110,11 @@
             function deleteTrick() {
                 $(".js-delete").on("click", function() {
                     //position = $(window).scrollTop(); 
-                    $.get("/deleteHome/" + id, function(response) {
+                    var nb = $(this).prop('class').split(' ').slice(-1);
+                    $.get("/deleteHome/" + nb, function(response) {
 
                         $("div.js-confirmation").remove();
-                        $("#"+id).after(response);
+                        $("#"+nb).after(response);
                         //$(window).scrollTop(position);
 
                         setTimeout(function() {
